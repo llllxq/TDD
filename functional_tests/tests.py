@@ -1,4 +1,4 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
@@ -6,7 +6,7 @@ from selenium.common.exceptions import WebDriverException
 
 MAX_WAIT = 10
 
-class NewVisitorTest(LiveServerTestCase):    # (1)
+class NewVisitorTest(StaticLiveServerTestCase):    # (1)
 
     def test_can_start_a_list_for_one_user(self):
         # Edith has heard about a cool new online to-do app. She goes
@@ -91,6 +91,14 @@ class NewVisitorTest(LiveServerTestCase):    # (1)
 
         # Satisfied, they both go back to sleep
         
+    
+
+    def setUp(self):    # (3)
+        self.browser = webdriver.Firefox()
+
+    def tearDown(self): # (3)
+        self.browser.quit()
+        
     def wait_for_row_in_list_table(self, row_text):
         start_time = time.time()
         while True:
@@ -103,12 +111,6 @@ class NewVisitorTest(LiveServerTestCase):    # (1)
                 if time.time() - start_time > MAX_WAIT:
                     raise e
                 time.sleep(0.5)
-
-    def setUp(self):    # (3)
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self): # (3)
-        self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element_by_id('id_list_table')
